@@ -3,6 +3,8 @@ import java.util.Scanner;
 public class Pico {
     public static void main(String[] args) {
         String line = "____________________________________________________________";
+        String[] tasks = new String[100];
+        int taskCount = 0;
         Scanner scanner = new Scanner(System.in);
 
         System.out.println(line);
@@ -13,8 +15,19 @@ public class Pico {
         System.out.print("                              You: ");
         String input = scanner.nextLine();
         while (!input.equals("bye")) {
-            System.out.println("Pico: " + input);
-            System.out.println();
+            System.out.println(line);
+            if (input.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                }
+            } else if (taskCount < tasks.length) {
+                tasks[taskCount] = input;
+                taskCount++;
+                System.out.println(" added: " + input);
+            } else {
+                System.out.println(" Sorry, I can only store up to 100 tasks.");
+            }
+            System.out.println(line);
             System.out.print("                              You: ");
             input = scanner.nextLine();
         }
