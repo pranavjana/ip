@@ -1,3 +1,5 @@
+package pico;
+
 public class Event extends Task {
 
     protected String from;
