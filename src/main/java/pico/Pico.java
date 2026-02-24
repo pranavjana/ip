@@ -1,3 +1,5 @@
+package pico;
+
 import java.util.Scanner;
 
 public class Pico {
