@@ -66,6 +66,11 @@ public class Pico {
             return;
         }
 
+        if (isCommandWord(input, "delete")) {
+            handleDelete(input, taskList);
+            return;
+        }
+
         if (isCommandWord(input, "todo")) {
             handleTodo(input, taskList);
             return;
@@ -82,6 +87,17 @@ public class Pico {
         }
 
         throw new PicoException("Beep boop! That command doesn't exist on my planet.");
+    }
+
+    private static void handleDelete(String input, TaskList taskList) throws PicoException {
+        int taskNumber = parseTaskNumber(input, "delete");
+        Task task = taskList.deleteTask(taskNumber);
+        if (task == null) {
+            throw new PicoException("Task " + taskNumber + " doesn't exist in my star chart!");
+        }
+        System.out.println(" Noted. I've removed this task:");
+        System.out.println("   " + task);
+        System.out.println(" Now you have " + taskList.getTaskCount() + " tasks in the list.");
     }
 
     private static void handleTodo(String input, TaskList taskList) throws PicoException {
@@ -131,10 +147,8 @@ public class Pico {
         addTaskAndPrint(task, taskList);
     }
 
-    private static void addTaskAndPrint(Task task, TaskList taskList) throws PicoException {
-        if (!taskList.addTask(task)) {
-            throw new PicoException("My memory banks are full! I can only store up to 100 tasks.");
-        }
+    private static void addTaskAndPrint(Task task, TaskList taskList) {
+        taskList.addTask(task);
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + task);
         System.out.println(" Now you have " + taskList.getTaskCount() + " tasks in the list.");

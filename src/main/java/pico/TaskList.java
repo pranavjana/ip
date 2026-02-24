@@ -1,34 +1,35 @@
 package pico;
 
-public class TaskList {
-    private static final int MAX_TASKS = 100;
+import java.util.ArrayList;
 
-    private final Task[] tasks;
-    private int taskCount;
+public class TaskList {
+    private final ArrayList<Task> tasks;
 
     public TaskList() {
-        this.tasks = new Task[MAX_TASKS];
-        this.taskCount = 0;
+        this.tasks = new ArrayList<>();
     }
 
     public boolean addTask(Task task) {
-        if (taskCount >= MAX_TASKS) {
-            return false;
-        }
-        tasks[taskCount] = task;
-        taskCount++;
+        tasks.add(task);
         return true;
     }
 
     public int getTaskCount() {
-        return taskCount;
+        return tasks.size();
     }
 
     public Task getTaskByNumber(int taskNumber) {
-        if (taskNumber < 1 || taskNumber > taskCount) {
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
             return null;
         }
-        return tasks[taskNumber - 1];
+        return tasks.get(taskNumber - 1);
+    }
+
+    public Task deleteTask(int taskNumber) {
+        if (taskNumber < 1 || taskNumber > tasks.size()) {
+            return null;
+        }
+        return tasks.remove(taskNumber - 1);
     }
 
     public Task markTask(int taskNumber) {
