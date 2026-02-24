@@ -8,9 +8,19 @@ public class Pico {
     private static final String DEADLINE_DELIMITER = " /by ";
     private static final String EVENT_FROM_DELIMITER = " /from ";
     private static final String EVENT_TO_DELIMITER = " /to ";
+    private static final String DATA_FILE_PATH = "./data/pico.txt";
+
+    private static Storage storage;
 
     public static void main(String[] args) {
-        TaskList taskList = new TaskList();
+        storage = new Storage(DATA_FILE_PATH);
+        TaskList taskList;
+        try {
+            taskList = storage.load();
+        } catch (PicoException e) {
+            System.out.println(" " + e.getMessage());
+            taskList = new TaskList();
+        }
         Scanner scanner = new Scanner(System.in);
 
         printWelcome();
@@ -135,6 +145,7 @@ public class Pico {
         if (!taskList.addTask(task)) {
             throw new PicoException("My memory banks are full! I can only store up to 100 tasks.");
         }
+        storage.save(taskList);
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + task);
         System.out.println(" Now you have " + taskList.getTaskCount() + " tasks in the list.");
@@ -160,6 +171,7 @@ public class Pico {
         if (task == null) {
             throw new PicoException("Task " + taskNumber + " doesn't exist in my star chart!");
         }
+        storage.save(taskList);
         System.out.println(" Nice! I've marked this task as done:");
         System.out.println("  " + task);
     }
@@ -170,6 +182,7 @@ public class Pico {
         if (task == null) {
             throw new PicoException("Task " + taskNumber + " doesn't exist in my star chart!");
         }
+        storage.save(taskList);
         System.out.println(" OK, I've marked this task as not done yet:");
         System.out.println("  " + task);
     }
