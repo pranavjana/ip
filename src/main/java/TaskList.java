@@ -10,7 +10,7 @@ public class TaskList {
     }
 
     public boolean addTask(Task task) {
-        if (taskCount >= tasks.length) {
+        if (taskCount >= MAX_TASKS) {
             return false;
         }
         tasks[taskCount] = task;

@@ -1,8 +1,11 @@
 import java.util.Scanner;
 
 public class Pico {
-    private static final String LINE = "____________________________________________________________";
+    private static final String DIVIDER_LINE = "____________________________________________________________";
     private static final String USER_PROMPT = "                              You: ";
+    private static final String DEADLINE_DELIMITER = " /by ";
+    private static final String EVENT_FROM_DELIMITER = " /from ";
+    private static final String EVENT_TO_DELIMITER = " /to ";
 
     public static void main(String[] args) {
         TaskList taskList = new TaskList();
@@ -12,9 +15,9 @@ public class Pico {
 
         String input = readInput(scanner);
         while (!input.equals("bye")) {
-            System.out.println(LINE);
+            System.out.println(DIVIDER_LINE);
             handleCommand(input, taskList);
-            System.out.println(LINE);
+            System.out.println(DIVIDER_LINE);
             input = readInput(scanner);
         }
 
@@ -24,16 +27,16 @@ public class Pico {
     }
 
     private static void printWelcome() {
-        System.out.println(LINE);
+        System.out.println(DIVIDER_LINE);
         System.out.println(" Greetings! I'm Pico, your extraterrestrial bot!");
         System.out.println(" What can I do for you, earthling?");
-        System.out.println(LINE);
+        System.out.println(DIVIDER_LINE);
     }
 
     private static void printGoodbye() {
-        System.out.println(LINE);
+        System.out.println(DIVIDER_LINE);
         System.out.println(" Goodbye, earthling! Safe travels through the cosmos!");
-        System.out.println(LINE);
+        System.out.println(DIVIDER_LINE);
     }
 
     private static String readInput(Scanner scanner) {
@@ -87,13 +90,13 @@ public class Pico {
 
     private static void handleDeadline(String input, TaskList taskList) {
         String args = getCommandArgs(input, "deadline");
-        int byIndex = args.indexOf(" /by ");
+        int byIndex = args.indexOf(DEADLINE_DELIMITER);
         if (byIndex == -1) {
             System.out.println(" Sorry, please use the format: deadline <description> /by <date>");
             return;
         }
         String description = args.substring(0, byIndex).trim();
-        String by = args.substring(byIndex + 5).trim();
+        String by = args.substring(byIndex + DEADLINE_DELIMITER.length()).trim();
         if (description.isEmpty() || by.isEmpty()) {
             System.out.println(" Sorry, please use the format: deadline <description> /by <date>");
             return;
@@ -104,15 +107,15 @@ public class Pico {
 
     private static void handleEvent(String input, TaskList taskList) {
         String args = getCommandArgs(input, "event");
-        int fromIndex = args.indexOf(" /from ");
-        int toIndex = args.indexOf(" /to ");
+        int fromIndex = args.indexOf(EVENT_FROM_DELIMITER);
+        int toIndex = args.indexOf(EVENT_TO_DELIMITER);
         if (fromIndex == -1 || toIndex == -1) {
             System.out.println(" Sorry, please use the format: event <description> /from <start> /to <end>");
             return;
         }
         String description = args.substring(0, fromIndex).trim();
-        String from = args.substring(fromIndex + 7, toIndex).trim();
-        String to = args.substring(toIndex + 5).trim();
+        String from = args.substring(fromIndex + EVENT_FROM_DELIMITER.length(), toIndex).trim();
+        String to = args.substring(toIndex + EVENT_TO_DELIMITER.length()).trim();
         if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
             System.out.println(" Sorry, please use the format: event <description> /from <start> /to <end>");
             return;
@@ -132,9 +135,10 @@ public class Pico {
     }
 
     private static String getCommandArgs(String input, String commandWord) {
-        return input.length() > commandWord.length()
-                ? input.substring(commandWord.length()).trim()
-                : "";
+        if (input.length() <= commandWord.length()) {
+            return "";
+        }
+        return input.substring(commandWord.length()).trim();
     }
 
     private static void handleList(TaskList taskList) {
@@ -171,9 +175,7 @@ public class Pico {
     }
 
     private static Integer parseTaskNumber(String input, String commandWord) {
-        String commandArgs = input.length() > commandWord.length()
-                ? input.substring(commandWord.length()).trim()
-                : "";
+        String commandArgs = getCommandArgs(input, commandWord);
         if (commandArgs.isEmpty()) {
             return null;
         }
