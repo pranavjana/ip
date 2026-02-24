@@ -9,11 +9,11 @@ public class TaskList {
         this.taskCount = 0;
     }
 
-    public boolean addTask(String description) {
+    public boolean addTask(Task task) {
         if (taskCount >= tasks.length) {
             return false;
         }
-        tasks[taskCount] = new Task(description);
+        tasks[taskCount] = task;
         taskCount++;
         return true;
     }

@@ -57,17 +57,90 @@ public class Pico {
             return;
         }
 
-        if (taskList.addTask(input)) {
-            System.out.println(" added: " + input);
+        if (isCommandWord(input, "todo")) {
+            handleTodo(input, taskList);
+            return;
+        }
+
+        if (isCommandWord(input, "deadline")) {
+            handleDeadline(input, taskList);
+            return;
+        }
+
+        if (isCommandWord(input, "event")) {
+            handleEvent(input, taskList);
+            return;
+        }
+
+        System.out.println(" Sorry, I don't understand that command.");
+    }
+
+    private static void handleTodo(String input, TaskList taskList) {
+        String description = getCommandArgs(input, "todo");
+        if (description.isEmpty()) {
+            System.out.println(" Sorry, the description of a todo cannot be empty.");
+            return;
+        }
+        Task task = new Todo(description);
+        addTaskAndPrint(task, taskList);
+    }
+
+    private static void handleDeadline(String input, TaskList taskList) {
+        String args = getCommandArgs(input, "deadline");
+        int byIndex = args.indexOf(" /by ");
+        if (byIndex == -1) {
+            System.out.println(" Sorry, please use the format: deadline <description> /by <date>");
+            return;
+        }
+        String description = args.substring(0, byIndex).trim();
+        String by = args.substring(byIndex + 5).trim();
+        if (description.isEmpty() || by.isEmpty()) {
+            System.out.println(" Sorry, please use the format: deadline <description> /by <date>");
+            return;
+        }
+        Task task = new Deadline(description, by);
+        addTaskAndPrint(task, taskList);
+    }
+
+    private static void handleEvent(String input, TaskList taskList) {
+        String args = getCommandArgs(input, "event");
+        int fromIndex = args.indexOf(" /from ");
+        int toIndex = args.indexOf(" /to ");
+        if (fromIndex == -1 || toIndex == -1) {
+            System.out.println(" Sorry, please use the format: event <description> /from <start> /to <end>");
+            return;
+        }
+        String description = args.substring(0, fromIndex).trim();
+        String from = args.substring(fromIndex + 7, toIndex).trim();
+        String to = args.substring(toIndex + 5).trim();
+        if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
+            System.out.println(" Sorry, please use the format: event <description> /from <start> /to <end>");
+            return;
+        }
+        Task task = new Event(description, from, to);
+        addTaskAndPrint(task, taskList);
+    }
+
+    private static void addTaskAndPrint(Task task, TaskList taskList) {
+        if (taskList.addTask(task)) {
+            System.out.println(" Got it. I've added this task:");
+            System.out.println("   " + task);
+            System.out.println(" Now you have " + taskList.getTaskCount() + " tasks in the list.");
         } else {
             System.out.println(" Sorry, I can only store up to 100 tasks.");
         }
     }
 
+    private static String getCommandArgs(String input, String commandWord) {
+        return input.length() > commandWord.length()
+                ? input.substring(commandWord.length()).trim()
+                : "";
+    }
+
     private static void handleList(TaskList taskList) {
         System.out.println(" Here are the tasks in your list:");
         for (int i = 1; i <= taskList.getTaskCount(); i++) {
-            System.out.println(" " + i + ". " + taskList.getTaskByNumber(i));
+            System.out.println(" " + i + "." + taskList.getTaskByNumber(i));
         }
     }
 
