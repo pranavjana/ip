@@ -71,6 +71,13 @@ public class Ui {
         }
     }
 
+    public void showMatchingTasks(TaskList taskList) {
+        System.out.println(" Here are the matching tasks in your list:");
+        for (int i = 1; i <= taskList.getTaskCount(); i++) {
+            System.out.println(" " + i + "." + taskList.getTaskByNumber(i));
+        }
+    }
+
     public void close() {
         scanner.close();
     }

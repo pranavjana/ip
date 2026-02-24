@@ -10,6 +10,7 @@ list
 unmark 2
 delete 3
 list
+find book
 todo
 deadline
 bye

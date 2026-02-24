@@ -60,6 +60,9 @@ public class Pico {
         case "event":
             addTask(Parser.parseEvent(input));
             break;
+        case "find":
+            handleFind(input);
+            break;
         default:
             throw new PicoException("Beep boop! That command doesn't exist on my planet.");
         }
@@ -99,6 +102,15 @@ public class Pico {
         }
         storage.save(taskList);
         ui.showTaskUnmarked(task);
+    }
+
+    private void handleFind(String input) throws PicoException {
+        String keyword = Parser.getCommandArgs(input, "find");
+        if (keyword.isEmpty()) {
+            throw new PicoException("What are you looking for, earthling? Please provide a keyword.");
+        }
+        TaskList matchingTasks = taskList.findTasks(keyword);
+        ui.showMatchingTasks(matchingTasks);
     }
 
     public static void main(String[] args) {

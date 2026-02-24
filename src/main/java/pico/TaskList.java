@@ -49,4 +49,15 @@ public class TaskList {
         task.markAsNotDone();
         return task;
     }
+
+    public TaskList findTasks(String keyword) {
+        TaskList matchingTasks = new TaskList();
+        String lowerKeyword = keyword.toLowerCase();
+        for (Task task : tasks) {
+            if (task.toString().toLowerCase().contains(lowerKeyword)) {
+                matchingTasks.addTask(task);
+            }
+        }
+        return matchingTasks;
+    }
 }
