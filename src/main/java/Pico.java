@@ -16,7 +16,11 @@ public class Pico {
         String input = readInput(scanner);
         while (!input.equals("bye")) {
             System.out.println(DIVIDER_LINE);
-            handleCommand(input, taskList);
+            try {
+                handleCommand(input, taskList);
+            } catch (PicoException e) {
+                System.out.println(" " + e.getMessage());
+            }
             System.out.println(DIVIDER_LINE);
             input = readInput(scanner);
         }
@@ -44,7 +48,7 @@ public class Pico {
         return scanner.nextLine();
     }
 
-    private static void handleCommand(String input, TaskList taskList) {
+    private static void handleCommand(String input, TaskList taskList) throws PicoException {
         if (input.equals("list")) {
             handleList(taskList);
             return;
@@ -75,63 +79,63 @@ public class Pico {
             return;
         }
 
-        System.out.println(" Sorry, I don't understand that command.");
+        throw new PicoException("Beep boop! That command doesn't exist on my planet.");
     }
 
-    private static void handleTodo(String input, TaskList taskList) {
+    private static void handleTodo(String input, TaskList taskList) throws PicoException {
         String description = getCommandArgs(input, "todo");
         if (description.isEmpty()) {
-            System.out.println(" Sorry, the description of a todo cannot be empty.");
-            return;
+            throw new PicoException("A todo with no description? Even aliens label their tasks, earthling!");
         }
         Task task = new Todo(description);
         addTaskAndPrint(task, taskList);
     }
 
-    private static void handleDeadline(String input, TaskList taskList) {
+    private static void handleDeadline(String input, TaskList taskList) throws PicoException {
         String args = getCommandArgs(input, "deadline");
         int byIndex = args.indexOf(DEADLINE_DELIMITER);
         if (byIndex == -1) {
-            System.out.println(" Sorry, please use the format: deadline <description> /by <date>");
-            return;
+            throw new PicoException("Galactic format error! Use: deadline <description> /by <date>");
         }
         String description = args.substring(0, byIndex).trim();
         String by = args.substring(byIndex + DEADLINE_DELIMITER.length()).trim();
-        if (description.isEmpty() || by.isEmpty()) {
-            System.out.println(" Sorry, please use the format: deadline <description> /by <date>");
-            return;
+        if (description.isEmpty()) {
+            throw new PicoException("A deadline with no description? My sensors can't compute that!");
+        }
+        if (by.isEmpty()) {
+            throw new PicoException("When is this due, earthling? The /by field cannot be empty.");
         }
         Task task = new Deadline(description, by);
         addTaskAndPrint(task, taskList);
     }
 
-    private static void handleEvent(String input, TaskList taskList) {
+    private static void handleEvent(String input, TaskList taskList) throws PicoException {
         String args = getCommandArgs(input, "event");
         int fromIndex = args.indexOf(EVENT_FROM_DELIMITER);
         int toIndex = args.indexOf(EVENT_TO_DELIMITER);
         if (fromIndex == -1 || toIndex == -1) {
-            System.out.println(" Sorry, please use the format: event <description> /from <start> /to <end>");
-            return;
+            throw new PicoException("Galactic format error! Use: event <description> /from <start> /to <end>");
         }
         String description = args.substring(0, fromIndex).trim();
         String from = args.substring(fromIndex + EVENT_FROM_DELIMITER.length(), toIndex).trim();
         String to = args.substring(toIndex + EVENT_TO_DELIMITER.length()).trim();
-        if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
-            System.out.println(" Sorry, please use the format: event <description> /from <start> /to <end>");
-            return;
+        if (description.isEmpty()) {
+            throw new PicoException("An event with no description? My sensors can't compute that!");
+        }
+        if (from.isEmpty() || to.isEmpty()) {
+            throw new PicoException("When does this event start and end? Even space-time has boundaries!");
         }
         Task task = new Event(description, from, to);
         addTaskAndPrint(task, taskList);
     }
 
-    private static void addTaskAndPrint(Task task, TaskList taskList) {
-        if (taskList.addTask(task)) {
-            System.out.println(" Got it. I've added this task:");
-            System.out.println("   " + task);
-            System.out.println(" Now you have " + taskList.getTaskCount() + " tasks in the list.");
-        } else {
-            System.out.println(" Sorry, I can only store up to 100 tasks.");
+    private static void addTaskAndPrint(Task task, TaskList taskList) throws PicoException {
+        if (!taskList.addTask(task)) {
+            throw new PicoException("My memory banks are full! I can only store up to 100 tasks.");
         }
+        System.out.println(" Got it. I've added this task:");
+        System.out.println("   " + task);
+        System.out.println(" Now you have " + taskList.getTaskCount() + " tasks in the list.");
     }
 
     private static String getCommandArgs(String input, String commandWord) {
@@ -148,23 +152,21 @@ public class Pico {
         }
     }
 
-    private static void handleMark(String input, TaskList taskList) {
-        Integer taskNumber = parseTaskNumber(input, "mark");
-        Task task = taskNumber == null ? null : taskList.markTask(taskNumber);
+    private static void handleMark(String input, TaskList taskList) throws PicoException {
+        int taskNumber = parseTaskNumber(input, "mark");
+        Task task = taskList.markTask(taskNumber);
         if (task == null) {
-            System.out.println(" Sorry, please provide a valid task number.");
-            return;
+            throw new PicoException("Task " + taskNumber + " doesn't exist in my star chart!");
         }
         System.out.println(" Nice! I've marked this task as done:");
         System.out.println("  " + task);
     }
 
-    private static void handleUnmark(String input, TaskList taskList) {
-        Integer taskNumber = parseTaskNumber(input, "unmark");
-        Task task = taskNumber == null ? null : taskList.unmarkTask(taskNumber);
+    private static void handleUnmark(String input, TaskList taskList) throws PicoException {
+        int taskNumber = parseTaskNumber(input, "unmark");
+        Task task = taskList.unmarkTask(taskNumber);
         if (task == null) {
-            System.out.println(" Sorry, please provide a valid task number.");
-            return;
+            throw new PicoException("Task " + taskNumber + " doesn't exist in my star chart!");
         }
         System.out.println(" OK, I've marked this task as not done yet:");
         System.out.println("  " + task);
@@ -174,16 +176,16 @@ public class Pico {
         return input.equals(commandWord) || input.startsWith(commandWord + " ");
     }
 
-    private static Integer parseTaskNumber(String input, String commandWord) {
+    private static int parseTaskNumber(String input, String commandWord) throws PicoException {
         String commandArgs = getCommandArgs(input, commandWord);
         if (commandArgs.isEmpty()) {
-            return null;
+            throw new PicoException("Which task, earthling? Please provide a task number.");
         }
 
         try {
             return Integer.parseInt(commandArgs);
         } catch (NumberFormatException e) {
-            return null;
+            throw new PicoException("'" + commandArgs + "' is not a number in any galaxy I know!");
         }
     }
 }
