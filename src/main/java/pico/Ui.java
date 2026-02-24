@@ -2,6 +2,9 @@ package pico;
 
 import java.util.Scanner;
 
+/**
+ * Handles all user interaction including reading input and displaying messages.
+ */
 public class Ui {
     private static final String DIVIDER_LINE = "____________________________________________________________";
     private static final String USER_PROMPT = "                              You: ";

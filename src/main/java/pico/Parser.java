@@ -1,14 +1,30 @@
 package pico;
 
+/**
+ * Parses user input into commands and task objects.
+ */
 public class Parser {
     private static final String DEADLINE_DELIMITER = " /by ";
     private static final String EVENT_FROM_DELIMITER = " /from ";
     private static final String EVENT_TO_DELIMITER = " /to ";
 
+    /**
+     * Extracts the command word from the user input.
+     *
+     * @param input The full user input string.
+     * @return The first word of the input, representing the command.
+     */
     public static String getCommandWord(String input) {
         return input.split(" ", 2)[0];
     }
 
+    /**
+     * Extracts the arguments portion of the user input after the command word.
+     *
+     * @param input The full user input string.
+     * @param commandWord The command word to strip from the input.
+     * @return The arguments string, or an empty string if there are none.
+     */
     public static String getCommandArgs(String input, String commandWord) {
         if (input.length() <= commandWord.length()) {
             return "";
@@ -16,6 +32,14 @@ public class Parser {
         return input.substring(commandWord.length()).trim();
     }
 
+    /**
+     * Parses a task number from the user input for commands that operate on a specific task.
+     *
+     * @param input The full user input string.
+     * @param commandWord The command word to strip from the input.
+     * @return The parsed task number.
+     * @throws PicoException If no task number is provided or the argument is not a valid number.
+     */
     public static int parseTaskNumber(String input, String commandWord) throws PicoException {
         String args = getCommandArgs(input, commandWord);
         if (args.isEmpty()) {
@@ -28,6 +52,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a todo task from the user input.
+     *
+     * @param input The full user input string containing the todo command.
+     * @return A new Todo task parsed from the input.
+     * @throws PicoException If the description is empty.
+     */
     public static Todo parseTodo(String input) throws PicoException {
         String description = getCommandArgs(input, "todo");
         if (description.isEmpty()) {
@@ -36,6 +67,13 @@ public class Parser {
         return new Todo(description);
     }
 
+    /**
+     * Parses a deadline task from the user input.
+     *
+     * @param input The full user input string containing the deadline command.
+     * @return A new Deadline task parsed from the input.
+     * @throws PicoException If the format is invalid or required fields are empty.
+     */
     public static Deadline parseDeadline(String input) throws PicoException {
         String args = getCommandArgs(input, "deadline");
         int byIndex = args.indexOf(DEADLINE_DELIMITER);
@@ -53,6 +91,13 @@ public class Parser {
         return new Deadline(description, by);
     }
 
+    /**
+     * Parses an event task from the user input.
+     *
+     * @param input The full user input string containing the event command.
+     * @return A new Event task parsed from the input.
+     * @throws PicoException If the format is invalid or required fields are empty.
+     */
     public static Event parseEvent(String input) throws PicoException {
         String args = getCommandArgs(input, "event");
         int fromIndex = args.indexOf(EVENT_FROM_DELIMITER);

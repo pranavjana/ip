@@ -1,5 +1,8 @@
 package pico;
 
+/**
+ * Main class for the Pico chatbot application.
+ */
 public class Pico {
     private static final String DATA_FILE_PATH = "./data/pico.txt";
 
@@ -7,6 +10,11 @@ public class Pico {
     private final Ui ui;
     private TaskList taskList;
 
+    /**
+     * Creates a new Pico chatbot instance that loads tasks from the given file path.
+     *
+     * @param filePath The path to the file used for storing tasks.
+     */
     public Pico(String filePath) {
         ui = new Ui();
         storage = new Storage(filePath);
@@ -18,6 +26,10 @@ public class Pico {
         }
     }
 
+    /**
+     * Runs the main command loop of the chatbot, reading and processing user input
+     * until the user enters "bye".
+     */
     public void run() {
         ui.showWelcome();
         String input = ui.readCommand();

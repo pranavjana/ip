@@ -8,14 +8,28 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Handles loading and saving tasks to a file on disk.
+ */
 public class Storage {
     private static final String FILE_DELIMITER = " \\| ";
     private final Path filePath;
 
+    /**
+     * Creates a new Storage that reads from and writes to the given file path.
+     *
+     * @param filePath The path to the file used for storing tasks.
+     */
     public Storage(String filePath) {
         this.filePath = Paths.get(filePath);
     }
 
+    /**
+     * Saves all tasks in the given task list to the file.
+     *
+     * @param taskList The task list containing tasks to save.
+     * @throws PicoException If an I/O error occurs while saving.
+     */
     public void save(TaskList taskList) throws PicoException {
         try {
             Files.createDirectories(filePath.getParent());
@@ -29,6 +43,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Loads tasks from the file and returns them as a task list.
+     *
+     * @return A TaskList containing all tasks loaded from the file.
+     * @throws PicoException If an I/O error occurs while loading.
+     */
     public TaskList load() throws PicoException {
         TaskList taskList = new TaskList();
         File file = filePath.toFile();

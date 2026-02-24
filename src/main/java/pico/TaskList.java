@@ -2,6 +2,9 @@ package pico;
 
 import java.util.ArrayList;
 
+/**
+ * Manages a list of tasks with operations to add, delete, mark, and find tasks.
+ */
 public class TaskList {
     private final ArrayList<Task> tasks;
 
